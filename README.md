@@ -45,13 +45,3 @@ curl -L -o adguarddnsfilter.srs.sha256 https://github.com/x15rte/adguard2singbox
 sha256sum -c adguarddnsfilter.srs.sha256
 ```
 
-## Troubleshooting
-
-- If conversion fails, ensure `sing-box` is installed and available in `PATH`.
-- If download fails, retry later; the source endpoint may be temporarily unavailable.
-- If release upload fails, verify the workflow has `contents: write` permission.
-
-## References
-
-- [AdGuard SDNS filter source](https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt)
-- [sing-box AdGuard rule-set documentation](https://sing-box.sagernet.org/configuration/rule-set/adguard/)
