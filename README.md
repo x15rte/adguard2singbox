@@ -37,35 +37,6 @@ Each workflow run:
 5. Generates `adguarddnsfilter.srs.sha256`
 6. Force-updates tag `rules` to the current commit, then publishes both files to that release
 
-## Run locally (optional)
-
-```bash
-curl -fL --retry 3 --retry-delay 5 -o filter.txt https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
-set -euo pipefail
-latest_tag=$(gh api repos/SagerNet/sing-box/releases --jq 'map(select(.draft == false)) | .[0].tag_name')
-version="${latest_tag#v}"
-deb_arch=$(dpkg --print-architecture)
-case "$deb_arch" in
-  amd64) sb_arch="amd64" ;;
-  arm64) sb_arch="arm64" ;;
-  *) echo "Unsupported architecture: $deb_arch"; exit 1 ;;
-esac
-asset="sing-box_${version}_linux_${sb_arch}.deb"
-expected_sha=$(gh api repos/SagerNet/sing-box/releases/tags/"$latest_tag" --jq '.assets[] | select(.name=="'"$asset"'") | .digest' | sed 's/^sha256://')
-asset_api_url=$(gh api repos/SagerNet/sing-box/releases/tags/"$latest_tag" --jq '.assets[] | select(.name=="'"$asset"'") | .url')
-test -n "$expected_sha"
-test "$expected_sha" != "null"
-test -n "$asset_api_url"
-test "$asset_api_url" != "null"
-gh api -H "Accept: application/octet-stream" "$asset_api_url" > "$asset"
-echo "$expected_sha  $asset" | sha256sum -c -
-sudo dpkg -i "$asset"
-rm -f "$asset"
-sing-box rule-set convert --type adguard --output adguarddnsfilter.srs filter.txt
-test -s adguarddnsfilter.srs
-sha256sum adguarddnsfilter.srs > adguarddnsfilter.srs.sha256
-```
-
 ## Verify published files
 
 ```bash

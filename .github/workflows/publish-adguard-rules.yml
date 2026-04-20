@@ -76,33 +76,17 @@ jobs:
         run: |
           set -euo pipefail
 
-          gh api -X PATCH repos/${GITHUB_REPOSITORY}/git/refs/tags/rules \
-            -f sha="${GITHUB_SHA}" \
-            -F force=true || \
-          gh api -X POST repos/${GITHUB_REPOSITORY}/git/refs \
-            -f ref="refs/tags/rules" \
-            -f sha="${GITHUB_SHA}"
-
-          release_id=$(gh api repos/${GITHUB_REPOSITORY}/releases/tags/rules --jq '.id' 2>/dev/null || true)
-          if test -n "$release_id"; then
-            gh api -X PATCH repos/${GITHUB_REPOSITORY}/releases/${release_id} \
-              -f tag_name="rules" \
-              -f target_commitish="${GITHUB_SHA}" \
-              -f name="rules" \
-              -F make_latest=true
+          if gh api -X PATCH "repos/${GITHUB_REPOSITORY}/git/refs/tags/rules" -f sha="${GITHUB_SHA}" -f force=true >/dev/null 2>&1; then
+            echo "Updated tag rules -> ${GITHUB_SHA}"
           else
-            gh api -X POST repos/${GITHUB_REPOSITORY}/releases \
-              -f tag_name="rules" \
-              -f target_commitish="${GITHUB_SHA}" \
-              -f name="rules" \
-              -f draft=false \
-              -f prerelease=false \
-              -F make_latest=true \
-              -f generate_release_notes=false \
-              -f body=""
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" -f ref="refs/tags/rules" -f sha="${GITHUB_SHA}" >/dev/null
+            echo "Created tag rules -> ${GITHUB_SHA}"
           fi
 
-          gh release upload rules \
-            adguarddnsfilter.srs \
-            adguarddnsfilter.srs.sha256 \
-            --clobber
+          if gh release view rules >/dev/null 2>&1; then
+            gh release edit rules --target "${GITHUB_SHA}" --title "rules" --latest
+          else
+            gh release create rules --target "${GITHUB_SHA}" --title "rules" --latest --notes ""
+          fi
+
+          gh release upload rules adguarddnsfilter.srs adguarddnsfilter.srs.sha256 --clobber
