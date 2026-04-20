@@ -71,12 +71,38 @@ jobs:
           sha256sum adguarddnsfilter.srs > adguarddnsfilter.srs.sha256
 
       - name: Publish release assets
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: rules
-          name: rules
-          make_latest: true
-          overwrite_files: true
-          files: |
-            adguarddnsfilter.srs
-            adguarddnsfilter.srs.sha256
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          gh api -X PATCH repos/${GITHUB_REPOSITORY}/git/refs/tags/rules \
+            -f sha="${GITHUB_SHA}" \
+            -F force=true || \
+          gh api -X POST repos/${GITHUB_REPOSITORY}/git/refs \
+            -f ref="refs/tags/rules" \
+            -f sha="${GITHUB_SHA}"
+
+          release_id=$(gh api repos/${GITHUB_REPOSITORY}/releases/tags/rules --jq '.id' 2>/dev/null || true)
+          if test -n "$release_id"; then
+            gh api -X PATCH repos/${GITHUB_REPOSITORY}/releases/${release_id} \
+              -f tag_name="rules" \
+              -f target_commitish="${GITHUB_SHA}" \
+              -f name="rules" \
+              -F make_latest=true
+          else
+            gh api -X POST repos/${GITHUB_REPOSITORY}/releases \
+              -f tag_name="rules" \
+              -f target_commitish="${GITHUB_SHA}" \
+              -f name="rules" \
+              -f draft=false \
+              -f prerelease=false \
+              -F make_latest=true \
+              -f generate_release_notes=false \
+              -f body=""
+          fi
+
+          gh release upload rules \
+            adguarddnsfilter.srs \
+            adguarddnsfilter.srs.sha256 \
+            --clobber

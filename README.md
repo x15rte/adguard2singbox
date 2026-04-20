@@ -19,7 +19,7 @@ From the [`rules` release](https://github.com/x15rte/adguard2singbox/releases/ta
 - [`adguarddnsfilter.srs`](https://github.com/x15rte/adguard2singbox/releases/download/rules/adguarddnsfilter.srs)
 - [`adguarddnsfilter.srs.sha256`](https://github.com/x15rte/adguard2singbox/releases/download/rules/adguarddnsfilter.srs.sha256)
 
-The workflow updates the same `rules` release on every run (`overwrite_files: true`) and marks it as latest (`make_latest: true`).
+The workflow force-updates the `rules` tag to the current workflow commit on every run, replaces the same release assets, and marks the release as latest.
 
 ## Update schedule
 
@@ -35,7 +35,7 @@ Each workflow run:
 3. Converts `filter.txt` to `adguarddnsfilter.srs` using `sing-box rule-set convert --type adguard`
 4. Verifies the output exists and is non-empty (`test -s`)
 5. Generates `adguarddnsfilter.srs.sha256`
-6. Publishes both files to release tag `rules`
+6. Force-updates tag `rules` to the current commit, then publishes both files to that release
 
 ## Run locally (optional)
 
