@@ -20,3 +20,6 @@ Each run does the following:
 From the `rules-latest` release:
 - `adguarddnsfilter-latest.srs`
 - `adguarddnsfilter-latest.srs.sha256`
+
+## Usage
+https://github.com/x15rte/adguard2singbox/releases/download/rules-latest/adguarddnsfilter-latest.srs
