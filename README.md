@@ -9,17 +9,17 @@ A GitHub Actions workflow at `.github/workflows/publish-adguard-rules.yml` runs:
 - Manually via `workflow_dispatch`
 
 Each run does the following:
-1. Downloads `filter.txt` from AdGuard
-2. Installs sing-box (beta)
-3. Converts to `adguarddnsfilter-latest.srs`
-4. Generates `adguarddnsfilter-latest.srs.sha256`
-5. Publishes both files to release tag `rules-latest`
+1. Downloads [AdGuard SDNS filter](https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt)
+2. Installs [sing-box](https://sing-box.app/install.sh) (beta)
+3. Converts to `adguarddnsfilter.srs`
+4. Generates `adguarddnsfilter.srs.sha256`
+5. Publishes both files to release tag `rules`
 
 ## Published assets
 
-From the `rules-latest` release:
-- `adguarddnsfilter-latest.srs`
-- `adguarddnsfilter-latest.srs.sha256`
+From the [`rules` release](https://github.com/x15rte/adguard2singbox/releases/tag/rules):
+- [`adguarddnsfilter.srs`](https://github.com/x15rte/adguard2singbox/releases/download/rules/adguarddnsfilter.srs)
+- [`adguarddnsfilter.srs.sha256`](https://github.com/x15rte/adguard2singbox/releases/download/rules/adguarddnsfilter.srs.sha256)
 
-## Usage
-https://github.com/x15rte/adguard2singbox/releases/download/rules-latest/adguarddnsfilter-latest.srs
+## Reference docs
+- [sing-box AdGuard rule-set documentation](https://sing-box.sagernet.org/configuration/rule-set/adguard/)

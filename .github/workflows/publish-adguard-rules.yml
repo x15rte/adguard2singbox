@@ -30,23 +30,23 @@ jobs:
 
       - name: Convert to sing-box rule-set
         run: |
-          sing-box rule-set convert --type adguard --output adguarddnsfilter-latest.srs filter.txt
+          sing-box rule-set convert --type adguard --output adguarddnsfilter.srs filter.txt
 
       - name: Verify artifact
         run: |
-          test -s adguarddnsfilter-latest.srs
+          test -s adguarddnsfilter.srs
 
       - name: Generate checksum
         run: |
-          sha256sum adguarddnsfilter-latest.srs > adguarddnsfilter-latest.srs.sha256
+          sha256sum adguarddnsfilter.srs > adguarddnsfilter.srs.sha256
 
       - name: Publish release assets
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: rules-latest
-          name: rules-latest
+          tag_name: rules
+          name: rules
           make_latest: true
           overwrite_files: true
           files: |
-            adguarddnsfilter-latest.srs
-            adguarddnsfilter-latest.srs.sha256
+            adguarddnsfilter.srs
+            adguarddnsfilter.srs.sha256
