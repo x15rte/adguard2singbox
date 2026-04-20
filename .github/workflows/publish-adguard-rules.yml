@@ -84,10 +84,10 @@ jobs:
             echo "Created tag rules -> ${GITHUB_SHA}"
           fi
 
-          if gh release view rules >/dev/null 2>&1; then
-            gh release edit rules --target "${GITHUB_SHA}" --title "rules" --latest
+          if gh release view rules --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release edit rules --repo "${GITHUB_REPOSITORY}" --target "${GITHUB_SHA}" --title "rules" --latest
           else
-            gh release create rules --target "${GITHUB_SHA}" --title "rules" --latest --notes ""
+            gh release create rules --repo "${GITHUB_REPOSITORY}" --target "${GITHUB_SHA}" --title "rules" --latest --notes ""
           fi
 
-          gh release upload rules adguarddnsfilter.srs adguarddnsfilter.srs.sha256 --clobber
+          gh release upload rules adguarddnsfilter.srs adguarddnsfilter.srs.sha256 --repo "${GITHUB_REPOSITORY}" --clobber
