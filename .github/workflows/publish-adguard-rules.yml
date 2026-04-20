@@ -24,9 +24,39 @@ jobs:
             -o filter.txt \
             https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
 
-      - name: Install sing-box
+      - name: Install latest sing-box with digest verification
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          curl -fsSL https://sing-box.app/install.sh | sh -s -- --beta
+          set -euo pipefail
+
+          latest_tag=$(gh api repos/SagerNet/sing-box/releases --jq 'map(select(.draft == false)) | .[0].tag_name')
+          version="${latest_tag#v}"
+
+          deb_arch=$(dpkg --print-architecture)
+          case "$deb_arch" in
+            amd64) sb_arch="amd64" ;;
+            arm64) sb_arch="arm64" ;;
+            *)
+              echo "Unsupported architecture: $deb_arch"
+              exit 1
+              ;;
+          esac
+
+          asset="sing-box_${version}_linux_${sb_arch}.deb"
+
+          expected_sha=$(gh api repos/SagerNet/sing-box/releases/tags/"$latest_tag" --jq '.assets[] | select(.name=="'"$asset"'") | .digest' | sed 's/^sha256://')
+          asset_api_url=$(gh api repos/SagerNet/sing-box/releases/tags/"$latest_tag" --jq '.assets[] | select(.name=="'"$asset"'") | .url')
+
+          test -n "$expected_sha"
+          test "$expected_sha" != "null"
+          test -n "$asset_api_url"
+          test "$asset_api_url" != "null"
+
+          gh api -H "Accept: application/octet-stream" "$asset_api_url" > "$asset"
+          echo "$expected_sha  $asset" | sha256sum -c -
+          sudo dpkg -i "$asset"
+          rm -f "$asset"
 
       - name: Convert to sing-box rule-set
         run: |
