@@ -2,6 +2,16 @@
 
 Automatically converts the AdGuard DNS filter into a sing-box binary rule-set (`.srs`) and publishes it to GitHub Releases.
 
+## Usage
+```json
+{
+  "type": "remote",
+  "tag": "adblock",
+  "format": "binary",
+  "url": "https://github.com/x15rte/adguard2singbox/releases/download/rules/adguarddnsfilter.srs"
+}
+```
+
 ## Automation
 
 A GitHub Actions workflow at `.github/workflows/publish-adguard-rules.yml` runs:
